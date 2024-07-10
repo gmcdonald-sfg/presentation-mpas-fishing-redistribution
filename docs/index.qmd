@@ -48,13 +48,14 @@ ntz_annual_summary |>
   ggplot2::theme(text = ggplot2::element_text(size = 20),
                  axis.title.y = ggplot2::element_text(angle = 0,
                                                       vjust = 0.5)) +
-  ggplot2::scale_y_continuous(labels = scales::percent) +
+  ggplot2::scale_y_continuous(labels = scales::percent,
+                              limits = c(0,0.03)) +
   ggplot2::labs(x = "Year",
                 y = "",
                 title = "Percentage of ocean covered by fully-protected MPAS")
 ```
 
-## International initiatives like "30x30" call for even more rapid growth
+## "30x30" commitments calls for even more rapid growth
 
 ```{r}
 ntz_annual_summary |>
