@@ -11,3 +11,5 @@ The presentation will go this paper:
 **Authors**: Gavin McDonald, Jennifer Bone, Christopher Costello, Gabriel Englander, Jennifer Raynor
 
 **Corresponding author**: Gavin McDonald (gmcdonald@bren.ucsb.edu)
+
+**Link to presentation**: https://gmcdonald-sfg.github.io/presentation-mpas-fishing-redistribution/
