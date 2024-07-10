@@ -1,26 +1,33 @@
 ---
 title: "Global expansion of marine protected areas and the redistribution of fishing effort"
-subtitle: "PNAS, July 2024: https://www.pnas.org/doi/10.1073/pnas.2400592121"
+subtitle: "PNAS, July 2024 https://www.pnas.org/doi/10.1073/pnas.2400592121"
 author: "Gavin McDonald, Jennifer Bone, Christopher Costello, Gabriel Englander, Jennifer Raynor"
 format: revealjs
 editor: visual
+editor_options: 
+  chunk_output_type: console
 ---
 
-## Quarto
+## Fishing effort data from Global Fishing Watch
 
-Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+![](figures/fishing-map-1.png)
 
-## Bullets
+## We look at a range of different global MPA network scenarios
 
-When you click the **Render** button a document will be generated that includes:
+![](figures/mpa-network-simulation-maps-1.png)
 
--   Content authored with markdown
--   Output from executable code
+## Even for the same area protected target, different networks cover vastly different amounts of current effort
 
-## Code
+![](figures/overlapping-area-with-protection-1.png)
 
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+## 
 
-```{r}
-1 + 1
-```
+![](figures/results-simulations-hurdle-global-levels-1.png)
+
+## 
+
+![](figures/results-simulations-hurdle-global-1.png)
+
+## 
+
+![](figures/effort-change-by-distance-to-mpa-1.png)
