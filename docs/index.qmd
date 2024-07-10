@@ -1,12 +1,90 @@
 ---
 title: "Global expansion of marine protected areas and the redistribution of fishing effort"
-subtitle: "PNAS, July 2024 https://www.pnas.org/doi/10.1073/pnas.2400592121"
+subtitle: "Proceedings of the National Academy of Sciences (PNAS) 2024"
 author: "Gavin McDonald, Jennifer Bone, Christopher Costello, Gabriel Englander, Jennifer Raynor"
 format: revealjs
 editor: visual
 editor_options: 
   chunk_output_type: console
 ---
+
+## MPAs are expanding globally
+
+```{r}
+ntz_implementation_dates <- readr::read_csv("../data/ntz_implementation_dates.csv")
+
+ntz_annual_summary <- ntz_implementation_dates |>
+  dplyr::filter(!is.na(ntz_implementation_date_mmddyyyy)) |>
+  dplyr::mutate(ntz_implementation_date_mmddyyyy = lubridate::mdy(ntz_implementation_date_mmddyyyy)) |>
+  dplyr::mutate(year = lubridate::year(ntz_implementation_date_mmddyyyy)) |>
+  dplyr::group_by(year) |>
+  dplyr::summarize(annual_additions = dplyr::n(),
+                   mpa_area_km2 = sum(mpa_area_km2,na.rm=TRUE)) |>
+  dplyr::ungroup() |>
+  dplyr::mutate(total_mpas = cumsum(annual_additions),
+                mpa_area_km2 = cumsum(mpa_area_km2),
+                mpa_ocean_coverage = mpa_area_km2 / 361.1e6)
+
+ntz_annual_summary |>
+  ggplot2::ggplot(ggplot2::aes(x = year, y = total_mpas)) +
+  ggplot2::geom_line() +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(text = ggplot2::element_text(size = 20),
+                 axis.title.y = ggplot2::element_text(angle = 0,
+                                                      vjust = 0.5)) +
+  ggplot2::scale_y_continuous(labels = scales::comma) +
+  ggplot2::labs(x = "Year",
+                y = "",
+                title = "Total number of fully-protected MPAS")
+```
+
+## MPAs are expanding globally
+
+```{r}
+ntz_annual_summary |>
+  ggplot2::ggplot(ggplot2::aes(x = year, y = mpa_ocean_coverage)) +
+  ggplot2::geom_line() +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(text = ggplot2::element_text(size = 20),
+                 axis.title.y = ggplot2::element_text(angle = 0,
+                                                      vjust = 0.5)) +
+  ggplot2::scale_y_continuous(labels = scales::percent) +
+  ggplot2::labs(x = "Year",
+                y = "",
+                title = "Percentage of ocean covered by fully-protected MPAS")
+```
+
+## International initiatives like "30x30" call for even more rapid growth
+
+```{r}
+ntz_annual_summary |>
+  dplyr::mutate(current = "Existing MPAs") |>
+  dplyr::bind_rows(tibble::tibble(year = max(ntz_annual_summary$year,na.rm=TRUE),
+                       mpa_ocean_coverage = max(ntz_annual_summary$mpa_ocean_coverage),
+                       current = "Growth needed to meet 30x30")) |>
+  dplyr::bind_rows(tibble::tibble(year = 2030,
+                       mpa_ocean_coverage = 0.3,
+                       current = "Growth needed to meet 30x30")) |>
+  ggplot2::ggplot(ggplot2::aes(x = year, 
+                               y = mpa_ocean_coverage,
+                               color = current)) +
+  ggplot2::geom_line() +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(text = ggplot2::element_text(size = 20),
+                 axis.title.y = ggplot2::element_text(angle = 0,
+                                                      vjust = 0.5)) +
+  ggplot2::scale_y_continuous(labels = scales::percent) +
+  ggplot2::labs(x = "Year",
+                y = "",
+                title = "Percentage of ocean covered by fully-protected MPAS") +
+  ggplot2::scale_color_manual("",
+                              values = c("Existing MPAs" = "black",
+                                       "Growth needed to meet 30x30" = "red"))
+```
+
+## What is the impact of expanding MPAs?
+
+The success or failure of MPA expansion hinges on how it affects fishing effort
 
 ## Fishing effort data from Global Fishing Watch
 
