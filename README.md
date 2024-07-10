@@ -1,7 +1,6 @@
 # presentation-mpas-fishing-redistribution
-Presentation for emLab Tuesday Team Time on July 23, 2024
 
-The presentation will go over findings from this paper:
+The presentation will go this paper:
 
 **Paper Title**: Global expansion of marine protected areas and the redistribution of fishing effort
 
