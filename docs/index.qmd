@@ -250,9 +250,9 @@ Under MPA expansion, effort will go down not only inside MPAs, but outside too; 
 
 ## Conclusions
 
--   Success or failure of spatial fisheries management depends on how fishing effort responds and reshuffles
+-   Success or failure of spatial fisheries management depends on how fishing effort redistributes 
 
--   First empirical estimate of how fishing effort will reshuffle globally following MPA expansion
+-   First empirical estimate of how fishing effort will redistribute globally following MPA expansion
 
 -   Fishing goes down *inside* MPAs (but not by 100%)
 
