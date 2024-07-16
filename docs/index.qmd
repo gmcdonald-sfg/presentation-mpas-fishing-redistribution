@@ -5,6 +5,7 @@ author: "Gavin McDonald, Jennifer Bone, Christopher Costello, Gabriel Englander,
 format:
   revealjs:
     slide-number: true
+    fontsize: 2.25em
 editor: visual
 editor_options: 
   chunk_output_type: console
@@ -29,7 +30,7 @@ ntz_annual_summary <- ntz_implementation_dates |>
 
 ntz_annual_summary |>
   ggplot2::ggplot(ggplot2::aes(x = year, y = total_mpas)) +
-  ggplot2::geom_line(linewidth = 1.25) +
+  ggplot2::geom_line(linewidth = 1.75) +
   ggplot2::theme_minimal() +
   ggplot2::theme(text = ggplot2::element_text(size = 20),
                  axis.title.y = ggplot2::element_text(angle = 0,
@@ -45,7 +46,7 @@ ntz_annual_summary |>
 ```{r}
 ntz_annual_summary |>
   ggplot2::ggplot(ggplot2::aes(x = year, y = mpa_ocean_coverage)) +
-  ggplot2::geom_line(linewidth = 1.25) +
+  ggplot2::geom_line(linewidth = 1.75) +
   ggplot2::theme_minimal() +
   ggplot2::theme(text = ggplot2::element_text(size = 20),
                  axis.title.y = ggplot2::element_text(angle = 0,
@@ -71,7 +72,7 @@ ntz_annual_summary |>
   ggplot2::ggplot(ggplot2::aes(x = year, 
                                y = mpa_ocean_coverage,
                                color = current)) +
-  ggplot2::geom_line(linewidth = 1.25) +
+  ggplot2::geom_line(linewidth = 1.75) +
   ggplot2::theme_minimal() +
   ggplot2::theme(text = ggplot2::element_text(size = 20),
                  axis.title.y = ggplot2::element_text(angle = 0,
@@ -252,7 +253,7 @@ Under MPA expansion, effort will go down not only inside MPAs, but outside too; 
 
 -   Success or failure of spatial fisheries management depends on how fishing effort redistributes 
 
--   First empirical estimate of how fishing effort will redistribute globally following MPA expansion
+-   First empirical estimate of how fishing effort will redistribute following global MPA expansion
 
 -   Fishing goes down *inside* MPAs (but not by 100%)
 
