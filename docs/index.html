@@ -354,37 +354,71 @@ Gavin McDonald, Jennifer Bone, Christopher Costello, Gabriel Englander, Jennifer
 <h2>What is the impact of expanding MPAs?</h2>
 <p>The success or failure of MPA expansion hinges on how it affects fishing effort</p>
 </section>
-<section id="fishing-effort-data-from-global-fishing-watch" class="slide level2">
-<h2>Fishing effort data from Global Fishing Watch</h2>
+<section id="model-training" class="slide level2">
+<h2>Model training</h2>
+<p>Use ML to make a predictive model of where future fishing effort goes following MPA implementation</p>
+<ul>
+<li>Test, train, and assess performance of 3 prediction models - 1 year forecast horizon, 2 years, and 3 years</li>
+<li>Each model is a 2 stage random forest hurdle model; (1) a classification model for whether or not fishing occurs in each pixel; and (2) a regression model for <em>how much</em> fishing occurs in fished pixels</li>
+<li>Model uses 42 features based on MPAs, environmental, geographic, governance, economic, technological, and previous fishing effort</li>
+</ul>
+</section>
+<section id="model-outcome-variable---fishing-effort" class="slide level2">
+<h2>Model outcome variable - Fishing effort</h2>
 
-<img data-src="figures/fishing-map-1.png" class="r-stretch"></section>
-<section id="we-look-at-a-range-of-different-global-mpa-network-scenarios" class="slide level2">
-<h2>We look at a range of different global MPA network scenarios</h2>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"></section>
+<section id="mpa-related-model-features" class="slide level2">
+<h2>MPA-related model features</h2>
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-7-1.png" width="1344" class="r-stretch"></section>
+<section id="other-model-features" class="slide level2">
+<h2>Other model features</h2>
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-8-1.png" width="1344" class="r-stretch"></section>
+<section id="simulations" class="slide level2">
+<h2>Simulations</h2>
+<p>Using trained model, run simulations to predict future effort under business-as-usual and many different MPA expansion scenarios</p>
 
 <img data-src="figures/mpa-network-simulation-maps-1.png" class="r-stretch"></section>
-<section id="even-for-the-same-area-protected-target-different-networks-cover-vastly-different-amounts-of-current-effort" class="slide level2">
-<h2>Even for the same area protected target, different networks cover vastly different amounts of current effort</h2>
+<section id="results" class="slide level2">
+<h2>Results</h2>
+<p>Even for the same area protected target, different expansion scenarios cover vastly different amounts of current effort</p>
 
 <img data-src="figures/overlapping-area-with-protection-1.png" class="r-stretch"></section>
-<section id="section" class="slide level2">
-<h2></h2>
+<section id="results-1" class="slide level2">
+<h2>Results</h2>
+<p>Without new MPAs, effort will continue to increase; with new MPAs, effort will be lower than BAU regardless of the network</p>
 
 <img data-src="figures/results-simulations-hurdle-global-levels-1.png" class="r-stretch"></section>
-<section id="section-1" class="slide level2">
-<h2></h2>
+<section id="results-2" class="slide level2">
+<h2>Results</h2>
+<p>Decrease in fishing effort depends not just on <em>how much</em> ocean you protect; but <em>which parts</em> of the ocean you protect</p>
 
 <img data-src="figures/results-simulations-hurdle-global-1.png" class="r-stretch"></section>
-<section id="section-2" class="slide level2">
-<h2></h2>
+<section id="results-3" class="slide level2">
+<h2>Results</h2>
+<p>Under MPA expansion, effort will go down not only inside MPAs, but outside too; this prediction is consistent with historical data</p>
 
 <img data-src="figures/effort-change-by-distance-to-mpa-1.png" class="r-stretch"></section>
+<section id="conclusions" class="slide level2">
+<h2>Conclusions</h2>
+<ul>
+<li><p>Success or failure of spatial fisheries management depends on how fishing effort responds and reshuffles</p></li>
+<li><p>First empirical estimate of how fishing effort will reshuffle globally following MPA expansion</p></li>
+<li><p>Fishing goes down <em>inside</em> MPAs (but not by 100%)</p></li>
+<li><p>Fishing goes down <em>outside</em> MPAs (biological, economic reasons)</p></li>
+<li><p>30x30 will lead to global effort reduction of 10%-20%</p></li>
+<li><p>Effects on catch, CPUE, profits will depend on current level of overfishing, biological characteristics</p></li>
+<li><p>ML approach could be used to predict reshuffling from other interventions, or climate change</p></li>
+</ul>
+</section>
 <section id="thank-you" class="slide level2">
 <h2>Thank you!</h2>
 <p>Made possible with the support of Jon Arnhold</p>
 <p>Link to paper:<br>
-<a href="https://www.pnas.org/doi/10.1073/pnas.2400592121">https://www.pnas.org/doi/10.1073/pnas.2400592121</a></p>
+<a href="https://www.pnas.org/doi/10.1073/pnas.2400592121" class="uri">https://www.pnas.org/doi/10.1073/pnas.2400592121</a></p>
 <p>Link to code and data:<br>
-<a href="https://github.com/emlab-ucsb/mpa-fishing-effort-redistribution">https://github.com/emlab-ucsb/mpa-fishing-effort-redistribution</a></p>
+<a href="https://github.com/emlab-ucsb/mpa-fishing-effort-redistribution" class="uri">https://github.com/emlab-ucsb/mpa-fishing-effort-redistribution</a></p>
 <div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
@@ -442,7 +476,7 @@ Gavin McDonald, Jennifer Bone, Christopher Costello, Gabriel Englander, Jennifer
         progress: true,
 
         // Display the page number of the current slide
-        slideNumber: false,
+        slideNumber: 'c/t',
 
         // 'all', 'print', or 'speaker'
         showSlideNumber: 'all',

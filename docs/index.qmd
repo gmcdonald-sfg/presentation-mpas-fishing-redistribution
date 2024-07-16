@@ -2,7 +2,9 @@
 title: "Global expansion of marine protected areas and the redistribution of fishing effort"
 subtitle: "Proceedings of the National Academy of Sciences (PNAS) 2024"
 author: "Gavin McDonald, Jennifer Bone, Christopher Costello, Gabriel Englander, Jennifer Raynor"
-format: revealjs
+format:
+  revealjs:
+    slide-number: true
 editor: visual
 editor_options: 
   chunk_output_type: console
@@ -11,7 +13,7 @@ editor_options:
 ## MPAs are expanding globally
 
 ```{r}
-ntz_implementation_dates <- readr::read_csv("../data/ntz_implementation_dates.csv")
+ntz_implementation_dates <- readr::read_csv(here::here("data/ntz_implementation_dates.csv"))
 
 ntz_annual_summary <- ntz_implementation_dates |>
   dplyr::filter(!is.na(ntz_implementation_date_mmddyyyy)) |>
@@ -27,7 +29,7 @@ ntz_annual_summary <- ntz_implementation_dates |>
 
 ntz_annual_summary |>
   ggplot2::ggplot(ggplot2::aes(x = year, y = total_mpas)) +
-  ggplot2::geom_line() +
+  ggplot2::geom_line(linewidth = 1.25) +
   ggplot2::theme_minimal() +
   ggplot2::theme(text = ggplot2::element_text(size = 20),
                  axis.title.y = ggplot2::element_text(angle = 0,
@@ -43,7 +45,7 @@ ntz_annual_summary |>
 ```{r}
 ntz_annual_summary |>
   ggplot2::ggplot(ggplot2::aes(x = year, y = mpa_ocean_coverage)) +
-  ggplot2::geom_line() +
+  ggplot2::geom_line(linewidth = 1.25) +
   ggplot2::theme_minimal() +
   ggplot2::theme(text = ggplot2::element_text(size = 20),
                  axis.title.y = ggplot2::element_text(angle = 0,
@@ -61,15 +63,15 @@ ntz_annual_summary |>
 ntz_annual_summary |>
   dplyr::mutate(current = "Existing MPAs") |>
   dplyr::bind_rows(tibble::tibble(year = max(ntz_annual_summary$year,na.rm=TRUE),
-                       mpa_ocean_coverage = max(ntz_annual_summary$mpa_ocean_coverage),
-                       current = "Growth needed to meet 30x30")) |>
+                                  mpa_ocean_coverage = max(ntz_annual_summary$mpa_ocean_coverage),
+                                  current = "Growth needed to meet 30x30")) |>
   dplyr::bind_rows(tibble::tibble(year = 2030,
-                       mpa_ocean_coverage = 0.3,
-                       current = "Growth needed to meet 30x30")) |>
+                                  mpa_ocean_coverage = 0.3,
+                                  current = "Growth needed to meet 30x30")) |>
   ggplot2::ggplot(ggplot2::aes(x = year, 
                                y = mpa_ocean_coverage,
                                color = current)) +
-  ggplot2::geom_line() +
+  ggplot2::geom_line(linewidth = 1.25) +
   ggplot2::theme_minimal() +
   ggplot2::theme(text = ggplot2::element_text(size = 20),
                  axis.title.y = ggplot2::element_text(angle = 0,
@@ -80,43 +82,194 @@ ntz_annual_summary |>
                 title = "Percentage of ocean covered by fully-protected MPAS") +
   ggplot2::scale_color_manual("",
                               values = c("Existing MPAs" = "black",
-                                       "Growth needed to meet 30x30" = "red"))
+                                         "Growth needed to meet 30x30" = "red"))
 ```
 
 ## What is the impact of expanding MPAs?
 
 The success or failure of MPA expansion hinges on how it affects fishing effort
 
-## Fishing effort data from Global Fishing Watch
+```{r}
+# Create global land sf object for mapping. This will just be used for creating global land outline
+world_plotting <- rnaturalearth::ne_countries(scale = "small", returnclass = "sf")  |>
+  dplyr::select(geometry)
 
-![](figures/fishing-map-1.png)
+# Also create coastline
+coastline <- rnaturalearth::ne_coastline(scale = "small", returnclass = "sf")
 
-## We look at a range of different global MPA network scenarios
+# Load global spatial grid, so that all data can be spatially visualized
+global_grid <- readr::read_csv(here::here("data/global_grid.csv")) |>
+  sf::st_as_sf(wkt = "geometry_wkt",
+               crs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs") |>
+  dplyr::select(pixel_id)
+
+# Function to make maps, using df as input and variable name as input
+make_map <- function(df, variable_name){
+  ggplot2::ggplot() +
+    ggplot2::geom_tile(data = df,
+                       ggplot2::aes_string(fill = variable_name,
+                                           x = "lon",
+                                           y = "lat")) +
+    ggplot2::geom_sf(data = world_plotting,
+                     fill = "grey50",
+                     color = "grey50") +
+    ggplot2::geom_sf(data = coastline,
+                     fill = NA,
+                     color = "black",
+                     linewidth = 0.05) +
+    ggplot2::theme(legend.position = "bottom",
+                   legend.direction = "horizontal", 
+                   legend.box.spacing = ggplot2::unit(0, "pt"),
+                   legend.margin=ggplot2::margin(0,0,0,0),
+                   panel.grid.minor = ggplot2::element_blank(),
+                   text = ggplot2::element_text(size = 16),
+                   panel.grid.major = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_rect(fill = "white",
+                                                            color = "black")) +
+    ggplot2::labs(x = "",
+                  y = "") +
+    ggplot2::scale_x_continuous(expand = c(0.001, 0.001)) +
+    ggplot2::scale_y_continuous(expand = c(0.001, 0.001))+
+    ggplot2::guides(fill = ggplot2::guide_colorbar(frame.colour = "black",
+                                                   ticks.colour = "black",
+                               barwidth = ggplot2::unit(10, "cm"),
+                               barheight = ggplot2::unit(0.3, "cm")))
+}
+```
+
+## Model training
+
+Use ML to make a predictive model of where future fishing effort goes following MPA implementation
+
+-   Test, train, and assess performance of 3 prediction models - 1 year forecast horizon, 2 years, and 3 years
+-   Each model is a 2 stage random forest hurdle model; (1) a classification model for whether or not fishing occurs in each pixel; and (2) a regression model for *how much* fishing occurs in fished pixels
+-   Model uses 42 features based on MPAs, environmental, geographic, governance, economic, technological, and previous fishing effort
+
+```{r}
+# Load 2020 and 2021 ML training data from paper
+# These are all data used, except fuel prices
+ml_training_data <- readr::read_csv(here::here("data/ml_training_data.csv")) |>
+  dplyr::inner_join(global_grid, by = c("pixel_id")) |>
+  sf::st_as_sf()|>
+           dplyr::mutate(fishing_hours = fishing_hours_per_m2 * pixel_area_m2)
+```
+
+## Model outcome variable - Fishing effort
+
+```{r}
+current_mpas <- sf::st_read(here::here("data/current_2020_no_take_mpa_geopackage.gpkg"),quiet = TRUE) |>
+  rmapshaper::ms_simplify()
+
+make_map(df = ml_training_data |>
+  dplyr::filter(year == 2021),
+         variable_name = "fishing_hours")  +
+  scico::scale_fill_scico("Fishing\nhours", palette = "devon", trans = "pseudo_log", 
+                          labels = scales::comma,
+                          direction = -1,
+                          breaks = c(0,10,1000,100000)) +
+  ggplot2::geom_sf(data = current_mpas,
+                  fill = "red",
+                  color = NA)
+```
+
+## MPA-related model features
+
+```{r fig.width = 14, fig.height = 9}
+ mpa_features <- ml_training_data |>
+  dplyr::filter(year == 2020) |>
+  dplyr::select(c("lon",
+                  "lat",
+                  "fraction_mpa_overlap",
+                  "fraction_mpa_overlap_neighbor_1",
+                  "nearest_mpa_distance_m",
+                  "nearest_years_since_mpa_designation")) |>
+  tidyr::pivot_longer(-c(lon,lat,geometry_wkt)) 
+
+mpa_feature_plots <- purrr::map(unique(mpa_features$name), function(name_tmp){
+  mpa_features |>
+    dplyr::filter(name == name_tmp) |>
+    make_map(variable_name = "value") +
+    ggplot2::labs(title = name_tmp) +
+    ggplot2::scale_fill_viridis_c("")
+})
+cowplot::plot_grid(plotlist = mpa_feature_plots,ncol = 2)
+```
+
+## Other model features
+
+```{r fig.width = 14, fig.height = 9}
+other_features <- ml_training_data |>
+  dplyr::filter(year == 2021) |>
+  dplyr::select(c("lon",
+                  "lat",
+                  "distance_from_port_m",
+                  "nearest_eez_distance_m",
+                  "sst_c_mean",
+                  "wind_speed_ms_mean")) |>
+  tidyr::pivot_longer(-c(lon,lat,geometry_wkt)) 
+
+other_feature_plots <- purrr::map(unique(other_features$name), function(name_tmp){
+  other_features |>
+    dplyr::filter(name == name_tmp) |>
+    make_map(variable_name = "value") +
+    ggplot2::labs(title = name_tmp) +
+    ggplot2::scale_fill_viridis_c("")
+})
+cowplot::plot_grid(plotlist = other_feature_plots,ncol = 2)
+```
+
+## Simulations
+
+Using trained model, run simulations to predict future effort under business-as-usual and many different MPA expansion scenarios
 
 ![](figures/mpa-network-simulation-maps-1.png)
 
-## Even for the same area protected target, different networks cover vastly different amounts of current effort
+## Results
+
+Even for the same area protected target, different expansion scenarios cover vastly different amounts of current effort
 
 ![](figures/overlapping-area-with-protection-1.png)
 
-## 
+## Results
+
+Without new MPAs, effort will continue to increase; with new MPAs, effort will be lower than BAU regardless of the network
 
 ![](figures/results-simulations-hurdle-global-levels-1.png)
 
-## 
+## Results
+
+Decrease in fishing effort depends not just on *how much* ocean you protect; but *which parts* of the ocean you protect
 
 ![](figures/results-simulations-hurdle-global-1.png)
 
-## 
+## Results
+
+Under MPA expansion, effort will go down not only inside MPAs, but outside too; this prediction is consistent with historical data
 
 ![](figures/effort-change-by-distance-to-mpa-1.png)
+
+## Conclusions
+
+-   Success or failure of spatial fisheries management depends on how fishing effort responds and reshuffles
+
+-   First empirical estimate of how fishing effort will reshuffle globally following MPA expansion
+
+-   Fishing goes down *inside* MPAs (but not by 100%)
+
+-   Fishing goes down *outside* MPAs (biological, economic reasons)
+
+-   30x30 will lead to global effort reduction of 10%-20%
+
+-   Effects on catch, CPUE, profits will depend on current level of overfishing, biological characteristics
+
+-   ML approach could be used to predict reshuffling from other interventions, or climate change
 
 ## Thank you!
 
 Made possible with the support of Jon Arnhold
 
-Link to paper:  
-[https://www.pnas.org/doi/10.1073/pnas.2400592121](https://www.pnas.org/doi/10.1073/pnas.2400592121)
+Link to paper:\
+<https://www.pnas.org/doi/10.1073/pnas.2400592121>
 
-Link to code and data:  
-[https://github.com/emlab-ucsb/mpa-fishing-effort-redistribution](https://github.com/emlab-ucsb/mpa-fishing-effort-redistribution)
+Link to code and data:\
+<https://github.com/emlab-ucsb/mpa-fishing-effort-redistribution>
